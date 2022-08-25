@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
+import logging
 import unittest
 
-from infi.clickhouse_orm.database import Database
-from infi.clickhouse_orm.models import Model
-from infi.clickhouse_orm.fields import *
-from infi.clickhouse_orm.engines import *
+from infi.coengage_clickhouse_orm.database import Database
+from infi.coengage_clickhouse_orm.engines import *
+from infi.coengage_clickhouse_orm.fields import *
+from infi.coengage_clickhouse_orm.models import Model
 
-import logging
 logging.getLogger("requests").setLevel(logging.WARNING)
 
 
 class TestCaseWithData(unittest.TestCase):
-
     def setUp(self):
-        self.database = Database('test-db', log_statements=True)
+        self.database = Database("test-db", log_statements=True)
         self.database.create_table(Person)
 
     def tearDown(self):
@@ -35,7 +34,6 @@ class TestCaseWithData(unittest.TestCase):
             yield Person(**entry)
 
 
-
 class Person(Model):
 
     first_name = StringField()
@@ -44,16 +42,24 @@ class Person(Model):
     height = Float32Field()
     passport = NullableField(UInt32Field())
 
-    engine = MergeTree('birthday', ('first_name', 'last_name', 'birthday'))
+    engine = MergeTree("birthday", ("first_name", "last_name", "birthday"))
 
 
 data = [
-    {"first_name": "Abdul", "last_name": "Hester", "birthday": "1970-12-02", "height": "1.63",
-     "passport": 35052255},
-
-    {"first_name": "Adam", "last_name": "Goodman", "birthday": "1986-01-07", "height": "1.74",
-     "passport": 36052255},
-
+    {
+        "first_name": "Abdul",
+        "last_name": "Hester",
+        "birthday": "1970-12-02",
+        "height": "1.63",
+        "passport": 35052255,
+    },
+    {
+        "first_name": "Adam",
+        "last_name": "Goodman",
+        "birthday": "1986-01-07",
+        "height": "1.74",
+        "passport": 36052255,
+    },
     {"first_name": "Adena", "last_name": "Norman", "birthday": "1979-05-14", "height": "1.66"},
     {"first_name": "Aline", "last_name": "Crane", "birthday": "1988-05-01", "height": "1.62"},
     {"first_name": "Althea", "last_name": "Barrett", "birthday": "2004-07-28", "height": "1.71"},
@@ -82,7 +88,12 @@ data = [
     {"first_name": "Courtney", "last_name": "Cannon", "birthday": "1997-10-26", "height": "1.76"},
     {"first_name": "Courtney", "last_name": "Hoffman", "birthday": "1994-11-07", "height": "1.65"},
     {"first_name": "Denton", "last_name": "Sanchez", "birthday": "1971-10-16", "height": "1.72"},
-    {"first_name": "Dominique", "last_name": "Sandoval", "birthday": "1972-02-01", "height": "1.72"},
+    {
+        "first_name": "Dominique",
+        "last_name": "Sandoval",
+        "birthday": "1972-02-01",
+        "height": "1.72",
+    },
     {"first_name": "Dora", "last_name": "Cabrera", "birthday": "2016-04-26", "height": "1.68"},
     {"first_name": "Eagan", "last_name": "Dodson", "birthday": "2015-10-22", "height": "1.67"},
     {"first_name": "Edan", "last_name": "Dennis", "birthday": "1989-09-18", "height": "1.73"},
@@ -147,9 +158,14 @@ data = [
     {"first_name": "Wang", "last_name": "Goodwin", "birthday": "1983-05-15", "height": "1.66"},
     {"first_name": "Warren", "last_name": "Bowen", "birthday": "2000-07-20", "height": "1.76"},
     {"first_name": "Warren", "last_name": "Dudley", "birthday": "1995-10-23", "height": "1.59"},
-    {"first_name": "Whilemina", "last_name": "Blankenship", "birthday": "1970-07-14", "height": "1.66"},
+    {
+        "first_name": "Whilemina",
+        "last_name": "Blankenship",
+        "birthday": "1970-07-14",
+        "height": "1.66",
+    },
     {"first_name": "Whitney", "last_name": "Durham", "birthday": "1977-09-15", "height": "1.72"},
     {"first_name": "Whitney", "last_name": "Scott", "birthday": "1971-07-04", "height": "1.70"},
     {"first_name": "Wynter", "last_name": "Garcia", "birthday": "1975-01-10", "height": "1.69"},
-    {"first_name": "Yolanda", "last_name": "Duke", "birthday": "1997-02-25", "height": "1.74"}
+    {"first_name": "Yolanda", "last_name": "Duke", "birthday": "1997-02-25", "height": "1.74"},
 ]

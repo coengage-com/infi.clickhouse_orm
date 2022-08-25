@@ -1,17 +1,16 @@
 import unittest
 from datetime import date
 
-from infi.clickhouse_orm.database import Database
-from infi.clickhouse_orm.models import Model, NO_VALUE
-from infi.clickhouse_orm.fields import *
-from infi.clickhouse_orm.engines import *
-from infi.clickhouse_orm.funcs import F
+from infi.coengage_clickhouse_orm.database import Database
+from infi.coengage_clickhouse_orm.engines import *
+from infi.coengage_clickhouse_orm.fields import *
+from infi.coengage_clickhouse_orm.funcs import F
+from infi.coengage_clickhouse_orm.models import NO_VALUE, Model
 
 
 class MaterializedFieldsTest(unittest.TestCase):
-
     def setUp(self):
-        self.database = Database('test-db', log_statements=True)
+        self.database = Database("test-db", log_statements=True)
         self.database.create_table(ModelWithMaterializedFields)
 
     def tearDown(self):
@@ -19,14 +18,14 @@ class MaterializedFieldsTest(unittest.TestCase):
 
     def test_insert_and_select(self):
         instance = ModelWithMaterializedFields(
-            date_time_field='2016-08-30 11:00:00',
-            int_field=-10,
-            str_field='TEST'
+            date_time_field="2016-08-30 11:00:00", int_field=-10, str_field="TEST"
         )
         self.database.insert([instance])
         # We can't select * from table, as it doesn't select materialized and alias fields
-        query = 'SELECT date_time_field, int_field, str_field, mat_int, mat_date, mat_str, mat_func' \
-                ' FROM $db.%s ORDER BY mat_date' % ModelWithMaterializedFields.table_name()
+        query = (
+            "SELECT date_time_field, int_field, str_field, mat_int, mat_date, mat_str, mat_func"
+            " FROM $db.%s ORDER BY mat_date" % ModelWithMaterializedFields.table_name()
+        )
         for model_cls in (ModelWithMaterializedFields, None):
             results = list(self.database.select(query, model_cls))
             self.assertEqual(len(results), 1)
@@ -41,7 +40,7 @@ class MaterializedFieldsTest(unittest.TestCase):
     def test_assignment_error(self):
         # I can't prevent assigning at all, in case db.select statements with model provided sets model fields.
         instance = ModelWithMaterializedFields()
-        for value in ('x', [date.today()], ['aaa'], [None]):
+        for value in ("x", [date.today()], ["aaa"], [None]):
             with self.assertRaises(ValueError):
                 instance.mat_date = value
 
@@ -51,10 +50,10 @@ class MaterializedFieldsTest(unittest.TestCase):
 
     def test_duplicate_default(self):
         with self.assertRaises(AssertionError):
-            StringField(materialized='str_field', default='with default')
+            StringField(materialized="str_field", default="with default")
 
         with self.assertRaises(AssertionError):
-            StringField(materialized='str_field', alias='str_field')
+            StringField(materialized="str_field", alias="str_field")
 
     def test_default_value(self):
         instance = ModelWithMaterializedFields()
@@ -66,9 +65,9 @@ class ModelWithMaterializedFields(Model):
     date_time_field = DateTimeField()
     str_field = StringField()
 
-    mat_str = StringField(materialized='lower(str_field)')
-    mat_int = Int32Field(materialized='abs(int_field)')
-    mat_date = DateField(materialized=u'toDate(date_time_field)')
+    mat_str = StringField(materialized="lower(str_field)")
+    mat_int = Int32Field(materialized="abs(int_field)")
+    mat_date = DateField(materialized=u"toDate(date_time_field)")
     mat_func = StringField(materialized=F.lower(str_field))
 
-    engine = MergeTree('mat_date', ('mat_date',))
+    engine = MergeTree("mat_date", ("mat_date",))

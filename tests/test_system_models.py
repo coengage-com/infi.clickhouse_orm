@@ -1,19 +1,17 @@
+import os
 import unittest
 from datetime import date
 
-import os
-
-from infi.clickhouse_orm.database import Database, DatabaseException
-from infi.clickhouse_orm.engines import *
-from infi.clickhouse_orm.fields import *
-from infi.clickhouse_orm.models import Model
-from infi.clickhouse_orm.system_models import SystemPart
+from infi.coengage_clickhouse_orm.database import Database, DatabaseException
+from infi.coengage_clickhouse_orm.engines import *
+from infi.coengage_clickhouse_orm.fields import *
+from infi.coengage_clickhouse_orm.models import Model
+from infi.coengage_clickhouse_orm.system_models import SystemPart
 
 
 class SystemTest(unittest.TestCase):
-
     def setUp(self):
-        self.database = Database('test-db', log_statements=True)
+        self.database = Database("test-db", log_statements=True)
 
     def tearDown(self):
         self.database.drop_database()
@@ -34,10 +32,10 @@ class SystemTest(unittest.TestCase):
 
 class SystemPartTest(unittest.TestCase):
 
-    BACKUP_DIRS = ['/var/lib/clickhouse/shadow', '/opt/clickhouse/shadow/']
+    BACKUP_DIRS = ["/var/lib/clickhouse/shadow", "/opt/clickhouse/shadow/"]
 
     def setUp(self):
-        self.database = Database('test-db', log_statements=True)
+        self.database = Database("test-db", log_statements=True)
         self.database.create_table(TestTable)
         self.database.create_table(CustomPartitionedTable)
         self.database.insert([TestTable(date_field=date.today())])
@@ -51,7 +49,7 @@ class SystemPartTest(unittest.TestCase):
             if os.path.exists(dir):
                 _, dirnames, _ = next(os.walk(dir))
                 return dirnames
-        raise unittest.SkipTest('Cannot find backups dir')
+        raise unittest.SkipTest("Cannot find backups dir")
 
     def test_is_read_only(self):
         self.assertTrue(SystemPart.is_read_only())
@@ -109,20 +107,23 @@ class SystemPartTest(unittest.TestCase):
 
     def test_query(self):
         SystemPart.objects_in(self.database).count()
-        list(SystemPart.objects_in(self.database).filter(table='testtable'))
+        list(SystemPart.objects_in(self.database).filter(table="testtable"))
 
 
 class TestTable(Model):
     date_field = DateField()
 
-    engine = MergeTree('date_field', ('date_field',))
+    engine = MergeTree("date_field", ("date_field",))
 
 
 class CustomPartitionedTable(Model):
     date_field = DateField()
     group_field = UInt32Field()
 
-    engine = MergeTree(order_by=('date_field', 'group_field'), partition_key=('toYYYYMM(date_field)', 'group_field'))
+    engine = MergeTree(
+        order_by=("date_field", "group_field"),
+        partition_key=("toYYYYMM(date_field)", "group_field"),
+    )
 
 
 class SystemTestModel(Model):

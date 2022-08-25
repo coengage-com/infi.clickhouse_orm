@@ -1,14 +1,14 @@
 import unittest
-from infi.clickhouse_orm.database import Database
-from infi.clickhouse_orm.fields import Field, Int16Field
-from infi.clickhouse_orm.models import Model
-from infi.clickhouse_orm.engines import Memory
+
+from infi.coengage_clickhouse_orm.database import Database
+from infi.coengage_clickhouse_orm.engines import Memory
+from infi.coengage_clickhouse_orm.fields import Field, Int16Field
+from infi.coengage_clickhouse_orm.models import Model
 
 
 class CustomFieldsTest(unittest.TestCase):
-
     def setUp(self):
-        self.database = Database('test-db', log_statements=True)
+        self.database = Database("test-db", log_statements=True)
 
     def tearDown(self):
         self.database.drop_database()
@@ -19,15 +19,18 @@ class CustomFieldsTest(unittest.TestCase):
             i = Int16Field()
             f = BooleanField()
             engine = Memory()
+
         self.database.create_table(TestModel)
         # Check valid values
-        for index, value in enumerate([1, '1', True, 0, '0', False]):
+        for index, value in enumerate([1, "1", True, 0, "0", False]):
             rec = TestModel(i=index, f=value)
             self.database.insert([rec])
-        self.assertEqual([rec.f for rec in TestModel.objects_in(self.database).order_by('i')],
-                          [True, True, True, False, False, False])
+        self.assertEqual(
+            [rec.f for rec in TestModel.objects_in(self.database).order_by("i")],
+            [True, True, True, False, False, False],
+        )
         # Check invalid values
-        for value in [None, 'zzz', -5, 7]:
+        for value in [None, "zzz", -5, 7]:
             with self.assertRaises(ValueError):
                 TestModel(i=1, f=value)
 
@@ -35,21 +38,20 @@ class CustomFieldsTest(unittest.TestCase):
 class BooleanField(Field):
 
     # The ClickHouse column type to use
-    db_type = 'UInt8'
+    db_type = "UInt8"
 
     # The default value if empty
     class_default = False
 
     def to_python(self, value, timezone_in_use):
         # Convert valid values to bool
-        if value in (1, '1', True):
+        if value in (1, "1", True):
             return True
-        elif value in (0, '0', False):
+        elif value in (0, "0", False):
             return False
         else:
-            raise ValueError('Invalid value for BooleanField: %r' % value)
+            raise ValueError("Invalid value for BooleanField: %r" % value)
 
     def to_db_string(self, value, quote=True):
         # The value was already converted by to_python, so it's a bool
-        return '1' if value else '0'
-
+        return "1" if value else "0"

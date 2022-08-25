@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from infi.clickhouse_orm.models import BufferModel
-from infi.clickhouse_orm.engines import *
+from infi.coengage_clickhouse_orm.engines import *
+from infi.coengage_clickhouse_orm.models import BufferModel
+
 from .base_test_with_data import *
 
 
 class BufferTestCase(TestCaseWithData):
-
     def _insert_and_check_buffer(self, data, count):
         self.database.insert(data)
         self.assertEqual(count, self.database.count(PersonBuffer))
