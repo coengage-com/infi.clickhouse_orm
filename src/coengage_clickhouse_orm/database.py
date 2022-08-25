@@ -281,7 +281,7 @@ class Database(object):
         - `model_class`: the model to count.
         - `conditions`: optional SQL conditions (contents of the WHERE clause).
         """
-        from infi.coengage_clickhouse_orm.query import Q
+        from coengage_clickhouse_orm.query import Q
 
         query = "SELECT count() FROM $table"
         if conditions:
@@ -341,7 +341,7 @@ class Database(object):
         The result is a namedtuple containing `objects` (list), `number_of_objects`,
         `pages_total`, `number` (of the current page), and `page_size`.
         """
-        from infi.coengage_clickhouse_orm.query import Q
+        from coengage_clickhouse_orm.query import Q
 
         count = self.count(model_class, conditions)
         pages_total = int(ceil(count / float(page_size)))

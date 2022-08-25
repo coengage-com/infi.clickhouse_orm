@@ -214,7 +214,7 @@ class ModelBase(type):
 
     @classmethod
     def create_ad_hoc_field(cls, db_type):
-        import infi.coengage_clickhouse_orm.fields as orm_fields
+        import coengage_clickhouse_orm.fields as orm_fields
 
         # Enums
         if db_type.startswith("Enum"):

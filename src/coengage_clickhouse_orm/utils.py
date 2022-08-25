@@ -47,14 +47,7 @@ def arg_to_sql(arg):
     Supports functions, model fields, strings, dates, datetimes, timedeltas, booleans,
     None, numbers, timezones, arrays/iterables.
     """
-    from infi.coengage_clickhouse_orm import (
-        DateField,
-        DateTimeField,
-        F,
-        Field,
-        QuerySet,
-        StringField,
-    )
+    from coengage_clickhouse_orm import DateTimeField, F, Field, QuerySet, StringField
 
     if isinstance(arg, F):
         return arg.to_sql()

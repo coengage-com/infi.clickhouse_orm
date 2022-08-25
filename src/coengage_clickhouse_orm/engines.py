@@ -105,7 +105,7 @@ class MergeTree(Engine):
 
         elif not self.date_col:
             # Can't import it globally due to circular import
-            from infi.coengage_clickhouse_orm.database import DatabaseException
+            from coengage_clickhouse_orm.database import DatabaseException
 
             raise DatabaseException(
                 "Custom partitioning is not supported before ClickHouse 1.1.54310. "

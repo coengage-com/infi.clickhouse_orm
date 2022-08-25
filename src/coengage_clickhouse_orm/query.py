@@ -25,7 +25,7 @@ class Operator(object):
         raise NotImplementedError  # pragma: no cover
 
     def _value_to_sql(self, field, value, quote=True):
-        from infi.coengage_clickhouse_orm.funcs import F
+        from coengage_clickhouse_orm.funcs import F
 
         if isinstance(field, str):
             return escape(value, quote)
@@ -370,7 +370,7 @@ class QuerySet(object):
             # Slice
             assert s.step in (None, 1), "step is not supported in slices"
             start = s.start or 0
-            stop = s.stop or 2 ** 63 - 1
+            stop = s.stop or 2**63 - 1
             assert start >= 0 and stop >= 0, "negative indexes are not supported"
             assert start <= stop, "start of slice cannot be smaller than its end"
             qs = copy(self)
